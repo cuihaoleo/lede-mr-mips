@@ -1,7 +1,8 @@
-diff -puNrb linux-3.10.49/arch/mips/include/asm/checksum.h linux-3.10.49-minimal/arch/mips/include/asm/checksum.h
---- linux-3.10.49/arch/mips/include/asm/checksum.h	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/checksum.h	2014-01-11 07:00:34.000000000 +0000
-@@ -14,6 +14,7 @@
+Index: linux-3.18.43/arch/mips/include/asm/checksum.h
+===================================================================
+--- linux-3.18.43.orig/arch/mips/include/asm/checksum.h
++++ linux-3.18.43/arch/mips/include/asm/checksum.h
+@@ -15,6 +15,7 @@
  #include <linux/in6.h>
  
  #include <asm/uaccess.h>
@@ -9,7 +10,7 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/checksum.h linux-3.10.49-minimal
  
  /*
   * computes the checksum of a memory block at buff, length len,
-@@ -105,23 +106,23 @@ static inline __sum16 ip_fast_csum(const
+@@ -135,23 +136,23 @@ static inline __sum16 ip_fast_csum(const
  	unsigned int csum;
  	int carry;
  
@@ -42,7 +43,7 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/checksum.h linux-3.10.49-minimal
  		csum += carry;
  		word++;
  	} while (word != stop);
-@@ -208,42 +209,90 @@ static __inline__ __sum16 csum_ipv6_magi
+@@ -238,42 +239,90 @@ static __inline__ __sum16 csum_ipv6_magi
  
  	"	addu	%0, %6		# csum\n"
  	"	sltu	$1, %0, %6	\n"
@@ -141,9 +142,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/checksum.h linux-3.10.49-minimal
  	"	addu	%0, $1		\n"
  	"	addu	%0, %1		\n"
  	"	sltu	$1, %0, %1	\n"
-diff -puNrb linux-3.10.49/arch/mips/include/asm/io.h linux-3.10.49-minimal/arch/mips/include/asm/io.h
---- linux-3.10.49/arch/mips/include/asm/io.h	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/io.h	2014-01-11 07:01:40.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/io.h
+===================================================================
+--- linux-3.18.43.orig/arch/mips/include/asm/io.h
++++ linux-3.18.43/arch/mips/include/asm/io.h
 @@ -206,6 +206,7 @@ static inline void __iomem * __ioremap_m
  		if (!size || last_addr < phys_addr)
  			return NULL;
@@ -152,7 +154,7 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/io.h linux-3.10.49-minimal/arch/
  		/*
  		 * Map uncached objects in the low 512MB of address
  		 * space using KSEG1.
-@@ -213,6 +214,7 @@ static inline void __iomem * __ioremap_m
+@@ -214,6 +215,7 @@ static inline void __iomem * __ioremap_m
  		    flags == _CACHE_UNCACHED)
  			return (void __iomem *)
  				(unsigned long)CKSEG1ADDR(phys_addr);
@@ -160,7 +162,7 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/io.h linux-3.10.49-minimal/arch/
  	}
  
  	return __ioremap(offset, size, flags);
-@@ -625,4 +627,41 @@ extern void (*_dma_cache_inv)(unsigned l
+@@ -630,4 +632,41 @@ extern void (*_dma_cache_inv)(unsigned l
   */
  #define xlate_dev_kmem_ptr(p)	p
  
@@ -202,9 +204,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/io.h linux-3.10.49-minimal/arch/
 +#endif
 +
  #endif /* _ASM_IO_H */
-diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h
---- linux-3.10.49/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h
 @@ -0,0 +1,6 @@
 +#ifndef __ASM_MACH_RB_CPU_FEATURE_OVERRIDES_H
 +#define __ASM_MACH_RB_CPU_FEATURE_OVERRIDES_H
@@ -212,9 +215,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h 
 +#define cpu_has_dsp		0
 +
 +#endif /* __ASM_MACH_RB_CPU_FEATURE_OVERRIDES_H */
-diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/irq.h linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/irq.h
---- linux-3.10.49/arch/mips/include/asm/mach-rb/irq.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/irq.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/mach-rb/irq.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/mach-rb/irq.h
 @@ -0,0 +1,16 @@
 +/*
 + * This file is subject to the terms and conditions of the GNU General Public
@@ -232,9 +236,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/irq.h linux-3.10.49-mini
 +#define NR_IRQS	168
 +
 +#endif /* __ASM_MACH_RB_IRQ_H */
-diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/kernel-entry-init.h linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/kernel-entry-init.h
---- linux-3.10.49/arch/mips/include/asm/mach-rb/kernel-entry-init.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/kernel-entry-init.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/mach-rb/kernel-entry-init.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/mach-rb/kernel-entry-init.h
 @@ -0,0 +1,44 @@
 +#ifndef __ASM_MACH_RB_KERNEL_ENTRY_H
 +#define __ASM_MACH_RB_KERNEL_ENTRY_H
@@ -280,17 +285,19 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/kernel-entry-init.h linu
 +.endm
 +
 +#endif
-diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/kmalloc.h linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/kmalloc.h
---- linux-3.10.49/arch/mips/include/asm/mach-rb/kmalloc.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/kmalloc.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/mach-rb/kmalloc.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/mach-rb/kmalloc.h
 @@ -0,0 +1,4 @@
 +#ifndef __ASM_MACH_RB_KMALLOC_H
 +#define __ASM_MACH_RB_KMALLOC_H
 +
 +#endif
-diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/mangle-port.h linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/mangle-port.h
---- linux-3.10.49/arch/mips/include/asm/mach-rb/mangle-port.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/mangle-port.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/mach-rb/mangle-port.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/mach-rb/mangle-port.h
 @@ -0,0 +1,36 @@
 +/*
 + * This file is subject to the terms and conditions of the GNU General Public
@@ -328,9 +335,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/mangle-port.h linux-3.10
 +#define __mem_ioswabq(a,x)	cpu_to_le32(x)
 +
 +#endif /* __ASM_MACH_GENERIC_MANGLE_PORT_H */
-diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/spaces.h linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/spaces.h
---- linux-3.10.49/arch/mips/include/asm/mach-rb/spaces.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/spaces.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/mach-rb/spaces.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/mach-rb/spaces.h
 @@ -0,0 +1,30 @@
 +#ifndef _ASM_MACH_RB_SPACES_H
 +#define _ASM_MACH_RB_SPACES_H
@@ -362,9 +370,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/spaces.h linux-3.10.49-m
 +#endif
 +
 +#endif
-diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/war.h linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/war.h
---- linux-3.10.49/arch/mips/include/asm/mach-rb/war.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/mach-rb/war.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/mach-rb/war.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/mach-rb/war.h
 @@ -0,0 +1,18 @@
 +#ifndef __ASM_MIPS_MACH_RB_WAR_H
 +#define __ASM_MIPS_MACH_RB_WAR_H
@@ -384,9 +393,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/mach-rb/war.h linux-3.10.49-mini
 +#define MIPS34K_MISSED_ITLB_WAR		0
 +
 +#endif
-diff -puNrb linux-3.10.49/arch/mips/include/asm/rb/boards.h linux-3.10.49-minimal/arch/mips/include/asm/rb/boards.h
---- linux-3.10.49/arch/mips/include/asm/rb/boards.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/rb/boards.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/rb/boards.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/rb/boards.h
 @@ -0,0 +1,66 @@
 +#ifndef _ASM_RB_BOARDS_H
 +#define _ASM_RB_BOARDS_H
@@ -454,9 +464,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/rb/boards.h linux-3.10.49-minima
 +extern unsigned long mips_machtype;
 +
 +#endif
-diff -puNrb linux-3.10.49/arch/mips/include/asm/rb/booter.h linux-3.10.49-minimal/arch/mips/include/asm/rb/booter.h
---- linux-3.10.49/arch/mips/include/asm/rb/booter.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/rb/booter.h	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/rb/booter.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/rb/booter.h
 @@ -0,0 +1,19 @@
 +#ifndef _ASM_BOOTER_H
 +#define _ASM_BOOTER_H
@@ -477,10 +488,11 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/rb/booter.h linux-3.10.49-minima
 +int read_booter_cfg(unsigned id, void *buf, int amount);
 +
 +#endif
-diff -puNrb linux-3.10.49/arch/mips/include/asm/string.h linux-3.10.49-minimal/arch/mips/include/asm/string.h
---- linux-3.10.49/arch/mips/include/asm/string.h	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/arch/mips/include/asm/string.h	2014-01-11 07:04:24.000000000 +0000
-@@ -108,8 +108,9 @@ strncmp(__const__ char *__cs, __const__ 
+Index: linux-3.18.43/arch/mips/include/asm/string.h
+===================================================================
+--- linux-3.18.43.orig/arch/mips/include/asm/string.h
++++ linux-3.18.43/arch/mips/include/asm/string.h
+@@ -108,8 +108,9 @@ strncmp(__const__ char *__cs, __const__
  	__asm__ __volatile__(
  	".set\tnoreorder\n\t"
  	".set\tnoat\n"
@@ -492,9 +504,10 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/string.h linux-3.10.49-minimal/a
  	"lbu\t$1,(%1)\n\t"
  	"subu\t%2,1\n\t"
  	"bne\t$1,%3,3f\n\t"
-diff -puNrb linux-3.10.49/arch/mips/include/asm/vm.h linux-3.10.49-minimal/arch/mips/include/asm/vm.h
---- linux-3.10.49/arch/mips/include/asm/vm.h	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/include/asm/vm.h	2014-01-11 07:04:31.000000000 +0000
+Index: linux-3.18.43/arch/mips/include/asm/vm.h
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/include/asm/vm.h
 @@ -0,0 +1,43 @@
 +#ifndef MT_VM_H
 +#define MT_VM_H
@@ -539,21 +552,23 @@ diff -puNrb linux-3.10.49/arch/mips/include/asm/vm.h linux-3.10.49-minimal/arch/
 +#define hc_yield() asm volatile ("wait")
 +
 +#endif
-diff -puNrb linux-3.10.49/arch/mips/Kbuild.platforms linux-3.10.49-minimal/arch/mips/Kbuild.platforms
---- linux-3.10.49/arch/mips/Kbuild.platforms	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/Kbuild.platforms	2014-01-11 07:04:57.000000000 +0000
-@@ -31,6 +31,7 @@ platforms += sni
+Index: linux-3.18.43/arch/mips/Kbuild.platforms
+===================================================================
+--- linux-3.18.43.orig/arch/mips/Kbuild.platforms
++++ linux-3.18.43/arch/mips/Kbuild.platforms
+@@ -30,6 +30,7 @@ platforms += sibyte
+ platforms += sni
  platforms += txx9
  platforms += vr41xx
- platforms += wrppmc
 +platforms += rb
  
  # include the platform specific files
  include $(patsubst %, $(srctree)/arch/mips/%/Platform, $(platforms))
-diff -puNrb linux-3.10.49/arch/mips/Kconfig linux-3.10.49-minimal/arch/mips/Kconfig
---- linux-3.10.49/arch/mips/Kconfig	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/arch/mips/Kconfig	2014-01-11 07:08:23.000000000 +0000
-@@ -713,6 +713,23 @@ config MIKROTIK_RB532
+Index: linux-3.18.43/arch/mips/Kconfig
+===================================================================
+--- linux-3.18.43.orig/arch/mips/Kconfig
++++ linux-3.18.43/arch/mips/Kconfig
+@@ -723,6 +723,23 @@ config MIKROTIK_RB532
  	  Support the Mikrotik(tm) RouterBoard 532 series,
  	  based on the IDT RC32434 SoC.
  
@@ -574,10 +589,10 @@ diff -puNrb linux-3.10.49/arch/mips/Kconfig linux-3.10.49-minimal/arch/mips/Kcon
 +	help
 +	  Say Y here to support all Mikrotik mips based routerboards
 +
- config WR_PPMC
- 	bool "Wind River PPMC board"
+ config CAVIUM_OCTEON_SOC
+ 	bool "Cavium Networks Octeon SoC based boards"
  	select CEVT_R4K
-@@ -838,6 +855,14 @@ config NLM_XLP_BOARD
+@@ -834,6 +851,14 @@ config MIPS_PARAVIRT
  
  endchoice
  
@@ -592,15 +607,15 @@ diff -puNrb linux-3.10.49/arch/mips/Kconfig linux-3.10.49-minimal/arch/mips/Kcon
  source "arch/mips/alchemy/Kconfig"
  source "arch/mips/ath79/Kconfig"
  source "arch/mips/bcm47xx/Kconfig"
-@@ -1164,6 +1189,7 @@ config MIPS_L1_CACHE_SHIFT
- 	default "4" if MACH_DECSTATION || MIKROTIK_RB532 || PMC_MSP4200_EVAL || SOC_RT288X
- 	default "6" if MIPS_CPU_SCACHE
- 	default "7" if SGI_IP22 || SGI_IP27 || SGI_IP28 || SNI_RM || CPU_CAVIUM_OCTEON
+@@ -1162,6 +1187,7 @@ config MIPS_L1_CACHE_SHIFT
+ 	default "5" if MIPS_L1_CACHE_SHIFT_5
+ 	default "6" if MIPS_L1_CACHE_SHIFT_6
+ 	default "7" if MIPS_L1_CACHE_SHIFT_7
 +	default "4" if MIPS_MIKROTIK
  	default "5"
  
  config HAVE_STD_PC_SERIAL_PORT
-@@ -1230,7 +1256,7 @@ config CPU_LOONGSON2F
+@@ -1240,7 +1266,7 @@ config CPU_LOONGSON1B
  config CPU_MIPS32_R1
  	bool "MIPS32 Release 1"
  	depends on SYS_HAS_CPU_MIPS32_R1
@@ -609,7 +624,7 @@ diff -puNrb linux-3.10.49/arch/mips/Kconfig linux-3.10.49-minimal/arch/mips/Kcon
  	select CPU_SUPPORTS_32BIT_KERNEL
  	select CPU_SUPPORTS_HIGHMEM
  	help
-@@ -1247,7 +1273,7 @@ config CPU_MIPS32_R1
+@@ -1257,7 +1283,7 @@ config CPU_MIPS32_R1
  config CPU_MIPS32_R2
  	bool "MIPS32 Release 2"
  	depends on SYS_HAS_CPU_MIPS32_R2
@@ -617,10 +632,11 @@ diff -puNrb linux-3.10.49/arch/mips/Kconfig linux-3.10.49-minimal/arch/mips/Kcon
 +#	select CPU_HAS_PREFETCH
  	select CPU_SUPPORTS_32BIT_KERNEL
  	select CPU_SUPPORTS_HIGHMEM
- 	select HAVE_KVM
-diff -puNrb linux-3.10.49/arch/mips/kernel/backtrace.c linux-3.10.49-minimal/arch/mips/kernel/backtrace.c
---- linux-3.10.49/arch/mips/kernel/backtrace.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/kernel/backtrace.c	2014-01-11 07:08:45.000000000 +0000
+ 	select CPU_SUPPORTS_MSA
+Index: linux-3.18.43/arch/mips/kernel/backtrace.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/kernel/backtrace.c
 @@ -0,0 +1,156 @@
 +#include <linux/module.h>
 +#include <linux/oprofile.h>
@@ -778,10 +794,19 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/backtrace.c linux-3.10.49-minimal/arc
 +}
 +
 +EXPORT_SYMBOL(find_prev_frame);
-diff -puNrb linux-3.10.49/arch/mips/kernel/cevt-r4k.c linux-3.10.49-minimal/arch/mips/kernel/cevt-r4k.c
---- linux-3.10.49/arch/mips/kernel/cevt-r4k.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/kernel/cevt-r4k.c	2014-01-11 07:09:06.000000000 +0000
-@@ -112,6 +112,14 @@ static int c0_compare_int_pending(void)
+Index: linux-3.18.43/arch/mips/kernel/cevt-r4k.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/cevt-r4k.c
++++ linux-3.18.43/arch/mips/kernel/cevt-r4k.c
+@@ -11,6 +11,7 @@
+ #include <linux/percpu.h>
+ #include <linux/smp.h>
+ #include <linux/irq.h>
++#include <linux/kernel.h>
+ 
+ #include <asm/time.h>
+ #include <asm/cevt-r4k.h>
+@@ -97,6 +98,14 @@ static int c0_compare_int_pending(void)
   * so wait up to worst case number of cycle counter ticks for timer interrupt
   * changes to propagate to the cause register.
   */
@@ -796,7 +821,15 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/cevt-r4k.c linux-3.10.49-minimal/arch
  #define COMPARE_INT_SEEN_TICKS 50
  
  int c0_compare_int_usable(void)
-@@ -137,7 +145,7 @@ int c0_compare_int_usable(void)
+@@ -108,13 +117,15 @@ int c0_compare_int_usable(void)
+     return 1;
+ #endif
+ 
++	printk(KERN_WARNING "Anyway, a printk works...\n");
++
+ 	/*
+ 	 * IP7 already pending?	 Try to clear it by acking the timer.
+ 	 */
  	if (c0_compare_int_pending()) {
  		cnt = read_c0_count();
  		write_c0_compare(cnt);
@@ -805,7 +838,7 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/cevt-r4k.c linux-3.10.49-minimal/arch
  		while (read_c0_count() < (cnt  + COMPARE_INT_SEEN_TICKS))
  			if (!c0_compare_int_pending())
  				break;
-@@ -149,7 +157,7 @@ int c0_compare_int_usable(void)
+@@ -126,7 +137,7 @@ int c0_compare_int_usable(void)
  		cnt = read_c0_count();
  		cnt += delta;
  		write_c0_compare(cnt);
@@ -814,7 +847,7 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/cevt-r4k.c linux-3.10.49-minimal/arch
  		if ((int)(read_c0_count() - cnt) < 0)
  		    break;
  		/* increase delta if the timer was already expired */
-@@ -165,7 +173,7 @@ int c0_compare_int_usable(void)
+@@ -142,7 +153,7 @@ int c0_compare_int_usable(void)
  		return 0;
  	cnt = read_c0_count();
  	write_c0_compare(cnt);
@@ -823,10 +856,11 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/cevt-r4k.c linux-3.10.49-minimal/arch
  	while (read_c0_count() < (cnt + COMPARE_INT_SEEN_TICKS))
  		if (!c0_compare_int_pending())
  			break;
-diff -puNrb linux-3.10.49/arch/mips/kernel/head.S linux-3.10.49-minimal/arch/mips/kernel/head.S
---- linux-3.10.49/arch/mips/kernel/head.S	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/arch/mips/kernel/head.S	2014-01-11 07:09:14.000000000 +0000
-@@ -146,7 +146,7 @@ EXPORT(__image_cmdline)
+Index: linux-3.18.43/arch/mips/kernel/head.S
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/head.S
++++ linux-3.18.43/arch/mips/kernel/head.S
+@@ -86,7 +86,7 @@ EXPORT(__image_cmdline)
  	.fill	0x400
  #endif /* CONFIG_IMAGE_CMDLINE_HACK */
  
@@ -835,9 +869,10 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/head.S linux-3.10.49-minimal/arch/mip
  
  NESTED(kernel_entry, 16, sp)			# kernel entry point
  
-diff -puNrb linux-3.10.49/arch/mips/kernel/Makefile linux-3.10.49-minimal/arch/mips/kernel/Makefile
---- linux-3.10.49/arch/mips/kernel/Makefile	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/arch/mips/kernel/Makefile	2014-01-11 07:09:28.000000000 +0000
+Index: linux-3.18.43/arch/mips/kernel/Makefile
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/Makefile
++++ linux-3.18.43/arch/mips/kernel/Makefile
 @@ -5,7 +5,7 @@
  extra-y		:= head.o vmlinux.lds
  
@@ -847,10 +882,11 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/Makefile linux-3.10.49-minimal/arch/m
  		   time.o topology.o traps.o unaligned.o watch.o vdso.o
  
  ifdef CONFIG_FUNCTION_TRACER
-diff -puNrb linux-3.10.49/arch/mips/kernel/module.c linux-3.10.49-minimal/arch/mips/kernel/module.c
---- linux-3.10.49/arch/mips/kernel/module.c	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/arch/mips/kernel/module.c	2014-01-11 07:09:36.000000000 +0000
-@@ -29,6 +29,7 @@
+Index: linux-3.18.43/arch/mips/kernel/module.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/module.c
++++ linux-3.18.43/arch/mips/kernel/module.c
+@@ -30,6 +30,7 @@
  #include <linux/string.h>
  #include <linux/kernel.h>
  #include <linux/spinlock.h>
@@ -858,7 +894,7 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/module.c linux-3.10.49-minimal/arch/m
  #include <linux/jump_label.h>
  
  #include <asm/pgtable.h>	/* MODULE_START */
-@@ -182,7 +183,10 @@ static inline bool is_phys_addr(void *pt
+@@ -183,7 +184,10 @@ static inline bool is_phys_addr(void *pt
  #ifdef CONFIG_64BIT
  	return (KSEGX((unsigned long)ptr) == CKSEG0);
  #else
@@ -870,9 +906,10 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/module.c linux-3.10.49-minimal/arch/m
  #endif
  }
  
-diff -puNrb linux-3.10.49/arch/mips/kernel/proc.c linux-3.10.49-minimal/arch/mips/kernel/proc.c
---- linux-3.10.49/arch/mips/kernel/proc.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/kernel/proc.c	2014-01-11 07:09:50.000000000 +0000
+Index: linux-3.18.43/arch/mips/kernel/proc.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/proc.c
++++ linux-3.18.43/arch/mips/kernel/proc.c
 @@ -13,6 +13,7 @@
  #include <asm/idle.h>
  #include <asm/mipsregs.h>
@@ -881,15 +918,15 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/proc.c linux-3.10.49-minimal/arch/mip
  #include <asm/prom.h>
  
  unsigned int vced_count, vcei_count;
-@@ -20,6 +21,7 @@ unsigned int vced_count, vcei_count;
- static int show_cpuinfo(struct seq_file *m, void *v)
+@@ -36,6 +37,7 @@ static int show_cpuinfo(struct seq_file
  {
+ 	struct proc_cpuinfo_notifier_args proc_cpuinfo_notifier_args;
  	unsigned long n = (unsigned long) v - 1;
 +	unsigned cpu_khz = mips_hpt_frequency / 500;
  	unsigned int version = cpu_data[n].processor_id;
  	unsigned int fp_vers = cpu_data[n].fpu_id;
  	char fmt [64];
-@@ -46,6 +48,8 @@ static int show_cpuinfo(struct seq_file 
+@@ -62,6 +64,8 @@ static int show_cpuinfo(struct seq_file
  	seq_printf(m, fmt, __cpu_name[n],
  		      (version >> 4) & 0x0f, version & 0x0f,
  		      (fp_vers >> 4) & 0x0f, fp_vers & 0x0f);
@@ -898,9 +935,10 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/proc.c linux-3.10.49-minimal/arch/mip
  	seq_printf(m, "BogoMIPS\t\t: %u.%02u\n",
  		      cpu_data[n].udelay_val / (500000/HZ),
  		      (cpu_data[n].udelay_val / (5000/HZ)) % 100);
-diff -puNrb linux-3.10.49/arch/mips/kernel/time.c linux-3.10.49-minimal/arch/mips/kernel/time.c
---- linux-3.10.49/arch/mips/kernel/time.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/kernel/time.c	2014-01-11 07:09:56.000000000 +0000
+Index: linux-3.18.43/arch/mips/kernel/time.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/time.c
++++ linux-3.18.43/arch/mips/kernel/time.c
 @@ -70,6 +70,7 @@ EXPORT_SYMBOL(perf_irq);
   */
  
@@ -909,19 +947,20 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/time.c linux-3.10.49-minimal/arch/mip
  
  /*
   * This function exists in order to cause an error due to a duplicate
-diff -puNrb linux-3.10.49/arch/mips/kernel/traps.c linux-3.10.49-minimal/arch/mips/kernel/traps.c
---- linux-3.10.49/arch/mips/kernel/traps.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/kernel/traps.c	2014-01-11 07:10:14.000000000 +0000
-@@ -91,6 +91,8 @@ void (*board_ebase_setup)(void);
+Index: linux-3.18.43/arch/mips/kernel/traps.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/traps.c
++++ linux-3.18.43/arch/mips/kernel/traps.c
+@@ -100,6 +100,8 @@ void (*board_bind_eic_interrupt)(int irq
  void (*board_ebase_setup)(void);
- void __cpuinitdata(*board_cache_error_setup)(void);
+ void(*board_cache_error_setup)(void);
  
 +#define CONFIG_RAWBACKTRACE
 +#ifdef CONFIG_RAWBACKTRACE
  static void show_raw_backtrace(unsigned long reg29)
  {
  	unsigned long *sp = (unsigned long *)(reg29 & ~3);
-@@ -144,6 +146,25 @@ static void show_backtrace(struct task_s
+@@ -153,6 +155,25 @@ static void show_backtrace(struct task_s
  	printk("\n");
  }
  
@@ -947,15 +986,15 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/traps.c linux-3.10.49-minimal/arch/mi
  /*
   * This routine abuses get_user()/put_user() to reference pointers
   * with at least a bit of error checking ...
-@@ -367,6 +388,7 @@ void __noreturn die(const char *str, str
- 	if (notify_die(DIE_OOPS, str, regs, 0, regs_to_trapnr(regs), SIGSEGV) == NOTIFY_STOP)
+@@ -386,6 +407,7 @@ void __noreturn die(const char *str, str
+ 		       SIGSEGV) == NOTIFY_STOP)
  		sig = 0;
  
 +	oops_enter();
  	console_verbose();
  	raw_spin_lock_irq(&die_lock);
- #ifdef CONFIG_MIPS_MT_SMTC
-@@ -1487,7 +1509,7 @@ void __init *set_except_vector(int n, vo
+ 	bust_spinlocks(1);
+@@ -1743,7 +1765,7 @@ void __init *set_except_vector(int n, vo
  #endif
  		u32 *buf = (u32 *)(ebase + 0x200);
  		unsigned int k0 = 26;
@@ -964,7 +1003,7 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/traps.c linux-3.10.49-minimal/arch/mi
  			uasm_i_j(&buf, handler & ~jump_mask);
  			uasm_i_nop(&buf);
  		} else {
-@@ -1727,6 +1749,7 @@ void __cpuinit per_cpu_trap_init(void)
+@@ -1961,6 +1983,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
  	 *  o read IntCtl.IPTI to determine the timer interrupt
  	 *  o read IntCtl.IPPCI to determine the performance counter interrupt
  	 */
@@ -972,7 +1011,7 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/traps.c linux-3.10.49-minimal/arch/mi
  	if (cpu_has_mips_r2) {
  		cp0_compare_irq_shift = CAUSEB_TI - CAUSEB_IP;
  		cp0_compare_irq = (read_c0_intctl() >> INTCTLB_IPTI) & 7;
-@@ -1734,11 +1757,17 @@ void __cpuinit per_cpu_trap_init(void)
+@@ -1968,11 +1991,17 @@ void per_cpu_trap_init(bool is_boot_cpu)
  		if (cp0_perfcount_irq == cp0_compare_irq)
  			cp0_perfcount_irq = -1;
  	} else {
@@ -987,10 +1026,10 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/traps.c linux-3.10.49-minimal/arch/mi
 +#ifdef CONFIG_MIPS_MIKROTIK
 +	cp0_compare_irq = CP0_LEGACY_COMPARE_IRQ;
 +#endif
- #ifdef CONFIG_MIPS_MT_SMTC
- 	}
- #endif /* CONFIG_MIPS_MT_SMTC */
-@@ -1833,7 +1862,7 @@ void __init trap_init(void)
+ 	if (!cpu_data[cpu].asid_cache)
+ 		cpu_data[cpu].asid_cache = ASID_FIRST_VERSION;
+ 
+@@ -2050,7 +2079,7 @@ void __init trap_init(void)
  #define KVM_GUEST_KSEG0     0x40000000
          ebase = KVM_GUEST_KSEG0;
  #else
@@ -999,10 +1038,11 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/traps.c linux-3.10.49-minimal/arch/mi
  #endif
  		if (cpu_has_mips_r2)
  			ebase += (read_c0_ebase() & 0x3ffff000);
-diff -puNrb linux-3.10.49/arch/mips/kernel/unaligned.c linux-3.10.49-minimal/arch/mips/kernel/unaligned.c
---- linux-3.10.49/arch/mips/kernel/unaligned.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/kernel/unaligned.c	2014-01-11 07:10:25.000000000 +0000
-@@ -106,6 +106,24 @@ static u32 unaligned_action;
+Index: linux-3.18.43/arch/mips/kernel/unaligned.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/unaligned.c
++++ linux-3.18.43/arch/mips/kernel/unaligned.c
+@@ -108,6 +108,24 @@ static u32 unaligned_action;
  #endif
  extern void show_registers(struct pt_regs *regs);
  
@@ -1027,16 +1067,16 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/unaligned.c linux-3.10.49-minimal/arc
  #ifdef __BIG_ENDIAN
  #define     LoadHW(addr, value, res)  \
  		__asm__ __volatile__ (".set\tnoat\n"        \
-@@ -1549,10 +1579,23 @@ sigill:
- 	    ("Unhandled kernel unaligned access or invalid instruction", regs);
+@@ -1635,11 +1653,23 @@ sigill:
  	force_sig(SIGILL, current);
  }
-+
+ 
 +extern asmlinkage void do_page_fault(struct pt_regs *regs, unsigned long write,
 +				     unsigned long address);
 +
  asmlinkage void do_ade(struct pt_regs *regs)
  {
+ 	enum ctx_state prev_state;
 -	unsigned int __user *pc;
 +	unsigned int __user *pc = NULL;
  	mm_segment_t seg;
@@ -1050,9 +1090,9 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/unaligned.c linux-3.10.49-minimal/arc
 +		return;
 +	}
  
+ 	prev_state = exception_enter();
  	perf_sw_event(PERF_COUNT_SW_ALIGNMENT_FAULTS,
- 			1, regs, regs->cp0_badvaddr);
-@@ -1567,6 +1610,10 @@ asmlinkage void do_ade(struct pt_regs *r
+@@ -1655,6 +1685,10 @@ asmlinkage void do_ade(struct pt_regs *r
  	if (unaligned_action == UNALIGNED_ACTION_SIGNAL)
  		goto sigbus;
  
@@ -1063,9 +1103,10 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/unaligned.c linux-3.10.49-minimal/arc
  	/*
  	 * Do branch emulation only if we didn't forward the exception.
  	 * This is all so but ugly ...
-diff -puNrb linux-3.10.49/arch/mips/kernel/vmlinux.lds.S linux-3.10.49-minimal/arch/mips/kernel/vmlinux.lds.S
---- linux-3.10.49/arch/mips/kernel/vmlinux.lds.S	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/arch/mips/kernel/vmlinux.lds.S	2014-01-11 07:10:42.000000000 +0000
+Index: linux-3.18.43/arch/mips/kernel/vmlinux.lds.S
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/vmlinux.lds.S
++++ linux-3.18.43/arch/mips/kernel/vmlinux.lds.S
 @@ -51,6 +51,7 @@ SECTIONS
  	/* read-only */
  	_text = .;	/* Text and read-only data */
@@ -1074,9 +1115,10 @@ diff -puNrb linux-3.10.49/arch/mips/kernel/vmlinux.lds.S linux-3.10.49-minimal/a
  		TEXT_TEXT
  		SCHED_TEXT
  		LOCK_TEXT
-diff -puNrb linux-3.10.49/arch/mips/lib/iomap.c linux-3.10.49-minimal/arch/mips/lib/iomap.c
---- linux-3.10.49/arch/mips/lib/iomap.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/lib/iomap.c	2014-01-11 08:11:06.000000000 +0000
+Index: linux-3.18.43/arch/mips/lib/iomap.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/lib/iomap.c
++++ linux-3.18.43/arch/mips/lib/iomap.c
 @@ -25,6 +25,8 @@
  
  #define PIO_MASK	0x0ffffUL
@@ -1095,21 +1137,11 @@ diff -puNrb linux-3.10.49/arch/mips/lib/iomap.c linux-3.10.49-minimal/arch/mips/
  /*
   * Create a virtual mapping cookie for an IO port range
   *
-diff -puNrb linux-3.10.49/arch/mips/mm/cache.c linux-3.10.49-minimal/arch/mips/mm/cache.c
---- linux-3.10.49/arch/mips/mm/cache.c	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/arch/mips/mm/cache.c	2014-01-11 07:11:16.000000000 +0000
-@@ -50,6 +50,7 @@ void (*flush_icache_all)(void);
- EXPORT_SYMBOL_GPL(local_flush_data_cache_page);
- EXPORT_SYMBOL(flush_data_cache_page);
- EXPORT_SYMBOL(flush_icache_all);
-+EXPORT_SYMBOL(flush_icache_range);
- 
- #ifdef CONFIG_DMA_NONCOHERENT
- 
-diff -puNrb linux-3.10.49/arch/mips/mm/c-r4k.c linux-3.10.49-minimal/arch/mips/mm/c-r4k.c
---- linux-3.10.49/arch/mips/mm/c-r4k.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/mm/c-r4k.c	2014-01-11 07:11:25.000000000 +0000
-@@ -1013,7 +1013,9 @@ static void __cpuinit probe_pcache(void)
+Index: linux-3.18.43/arch/mips/mm/c-r4k.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/mm/c-r4k.c
++++ linux-3.18.43/arch/mips/mm/c-r4k.c
+@@ -1183,7 +1183,9 @@ static void probe_pcache(void)
  			      c->dcache.linesz;
  		c->dcache.waybit = __ffs(dcache_size/c->dcache.ways);
  
@@ -1119,9 +1151,10 @@ diff -puNrb linux-3.10.49/arch/mips/mm/c-r4k.c linux-3.10.49-minimal/arch/mips/m
  		break;
  	}
  
-diff -puNrb linux-3.10.49/arch/mips/mm/dma-default.c linux-3.10.49-minimal/arch/mips/mm/dma-default.c
---- linux-3.10.49/arch/mips/mm/dma-default.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/mm/dma-default.c	2014-01-11 07:11:38.000000000 +0000
+Index: linux-3.18.43/arch/mips/mm/dma-default.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/mm/dma-default.c
++++ linux-3.18.43/arch/mips/mm/dma-default.c
 @@ -14,6 +14,10 @@
  #include <linux/module.h>
  #include <linux/scatterlist.h>
@@ -1132,8 +1165,8 @@ diff -puNrb linux-3.10.49/arch/mips/mm/dma-default.c linux-3.10.49-minimal/arch/
 +#endif
  #include <linux/gfp.h>
  #include <linux/highmem.h>
- 
-@@ -68,11 +72,9 @@ static gfp_t massage_gfp_flags(const str
+ #include <linux/dma-contiguous.h>
+@@ -53,11 +57,9 @@ static gfp_t massage_gfp_flags(const str
  	/* ignore region specifiers */
  	gfp &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
  
@@ -1145,23 +1178,23 @@ diff -puNrb linux-3.10.49/arch/mips/mm/dma-default.c linux-3.10.49-minimal/arch/
  #if defined(CONFIG_ZONE_DMA32) && defined(CONFIG_ZONE_DMA)
  	     if (dev->coherent_dma_mask < DMA_BIT_MASK(32))
  			dma_flag = __GFP_DMA;
-@@ -135,8 +137,15 @@ static void *mips_dma_alloc_coherent(str
- 
- 		if (!plat_device_is_coherent(dev)) {
- 			dma_cache_wback_inv((unsigned long) ret, size);
+@@ -128,8 +130,15 @@ void *mips_dma_alloc_coherent(struct dev
+ 	*dma_handle = plat_map_dma_mem(dev, ret, size);
+ 	if (!plat_device_is_coherent(dev)) {
+ 		dma_cache_wback_inv((unsigned long) ret, size);
 +#ifndef CONFIG_MAPPED_KERNEL
- 			if (!hw_coherentio)
- 				ret = UNCAC_ADDR(ret);
+ 		if (!hw_coherentio)
+ 			ret = UNCAC_ADDR(ret);
 +#else
-+			if (!in_interrupt())
-+				ret = ioremap((unsigned long) *dma_handle, size);
-+			else
-+				ret = UNCAC_ADDR(ret);
++		if (!in_interrupt())
++			ret = ioremap((unsigned long) *dma_handle, size);
++		else
++			ret = UNCAC_ADDR(ret);
 +#endif
- 		}
  	}
  
-@@ -162,10 +171,24 @@ static void mips_dma_free_coherent(struc
+ 	return ret;
+@@ -156,10 +165,24 @@ void mips_dma_free_coherent(struct devic
  	if (dma_release_from_coherent(dev, order, vaddr))
  		return;
  
@@ -1184,12 +1217,13 @@ diff -puNrb linux-3.10.49/arch/mips/mm/dma-default.c linux-3.10.49-minimal/arch/
 +	}
 +#endif
  
- 	free_pages(addr, get_order(size));
- }
-diff -puNrb linux-3.10.49/arch/mips/mm/fault.c linux-3.10.49-minimal/arch/mips/mm/fault.c
---- linux-3.10.49/arch/mips/mm/fault.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/mm/fault.c	2014-01-11 07:11:48.000000000 +0000
-@@ -85,6 +85,12 @@ asmlinkage void __kprobes do_page_fault(
+ 	page = virt_to_page((void *) addr);
+ 
+Index: linux-3.18.43/arch/mips/mm/fault.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/mm/fault.c
++++ linux-3.18.43/arch/mips/mm/fault.c
+@@ -85,6 +85,12 @@ static void __kprobes __do_page_fault(st
  		goto VMALLOC_FAULT_TARGET;
  #endif
  
@@ -1202,9 +1236,10 @@ diff -puNrb linux-3.10.49/arch/mips/mm/fault.c linux-3.10.49-minimal/arch/mips/m
  	/*
  	 * If we're in an interrupt or have no user
  	 * context, we must not take the fault..
-diff -puNrb linux-3.10.49/arch/mips/mm/init.c linux-3.10.49-minimal/arch/mips/mm/init.c
---- linux-3.10.49/arch/mips/mm/init.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/mm/init.c	2014-01-11 07:12:34.000000000 +0000
+Index: linux-3.18.43/arch/mips/mm/init.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/mm/init.c
++++ linux-3.18.43/arch/mips/mm/init.c
 @@ -44,6 +44,10 @@
  #include <asm/tlb.h>
  #include <asm/fixmap.h>
@@ -1213,20 +1248,20 @@ diff -puNrb linux-3.10.49/arch/mips/mm/init.c linux-3.10.49-minimal/arch/mips/mm
 +#include <asm/rb/boards.h>
 +#endif
 +
- /* Atomicity and interruptability */
- #ifdef CONFIG_MIPS_MT_SMTC
- 
-@@ -173,7 +177,7 @@ void *kmap_coherent(struct page *page, u
- 
- #define UNIQUE_ENTRYHI(idx) (CKSEG0 + ((idx) << (PAGE_SHIFT + 1)))
+ /*
+  * We have up to 8 empty zeroed pages so we can map one of the right colour
+  * when needed.	 This is necessary only on R4000 / R4400 SC and MC versions
+@@ -128,7 +132,7 @@ void *kmap_noncoherent(struct page *page
+ 	return __kmap_pgprot(page, addr, PAGE_KERNEL_NC);
+ }
  
 -void kunmap_coherent(void)
 +void kunmap_coherent()
  {
- #ifndef CONFIG_MIPS_MT_SMTC
  	unsigned int wired;
-@@ -333,6 +337,10 @@ void __init paging_init(void)
- 
+ 	unsigned long flags, old_ctx;
+@@ -284,6 +288,10 @@ void __init paging_init(void)
+ #endif
  #ifdef CONFIG_ZONE_DMA
  	max_zone_pfns[ZONE_DMA] = MAX_DMA_PFN;
 +#if defined(CONFIG_MIPS_MIKROTIK)
@@ -1236,9 +1271,10 @@ diff -puNrb linux-3.10.49/arch/mips/mm/init.c linux-3.10.49-minimal/arch/mips/mm
  #endif
  #ifdef CONFIG_ZONE_DMA32
  	max_zone_pfns[ZONE_DMA32] = MAX_DMA32_PFN;
-diff -puNrb linux-3.10.49/arch/mips/mm/ioremap.c linux-3.10.49-minimal/arch/mips/mm/ioremap.c
---- linux-3.10.49/arch/mips/mm/ioremap.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/mm/ioremap.c	2014-01-11 07:12:48.000000000 +0000
+Index: linux-3.18.43/arch/mips/mm/ioremap.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/mm/ioremap.c
++++ linux-3.18.43/arch/mips/mm/ioremap.c
 @@ -127,6 +127,7 @@ void __iomem * __ioremap(phys_t phys_add
  	if (!size || last_addr < phys_addr)
  		return NULL;
@@ -1255,10 +1291,11 @@ diff -puNrb linux-3.10.49/arch/mips/mm/ioremap.c linux-3.10.49-minimal/arch/mips
  
  	/*
  	 * Mappings have to be page-aligned
-diff -puNrb linux-3.10.49/arch/mips/mm/tlb-r4k.c linux-3.10.49-minimal/arch/mips/mm/tlb-r4k.c
---- linux-3.10.49/arch/mips/mm/tlb-r4k.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/mm/tlb-r4k.c	2014-01-11 07:13:13.000000000 +0000
-@@ -408,7 +408,9 @@ void __cpuinit tlb_init(void)
+Index: linux-3.18.43/arch/mips/mm/tlb-r4k.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/mm/tlb-r4k.c
++++ linux-3.18.43/arch/mips/mm/tlb-r4k.c
+@@ -474,7 +474,9 @@ static void r4k_tlb_configure(void)
  	 *     be set to fixed-size pages.
  	 */
  	write_c0_pagemask(PM_DEFAULT_MASK);
@@ -1268,16 +1305,18 @@ diff -puNrb linux-3.10.49/arch/mips/mm/tlb-r4k.c linux-3.10.49-minimal/arch/mips
  	if (current_cpu_type() == CPU_R10000 ||
  	    current_cpu_type() == CPU_R12000 ||
  	    current_cpu_type() == CPU_R14000)
-diff -puNrb linux-3.10.49/arch/mips/oprofile/common.c linux-3.10.49-minimal/arch/mips/oprofile/common.c
---- linux-3.10.49/arch/mips/oprofile/common.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/oprofile/common.c	2014-01-11 07:14:43.000000000 +0000
-@@ -11,10 +11,14 @@
+Index: linux-3.18.43/arch/mips/oprofile/common.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/oprofile/common.c
++++ linux-3.18.43/arch/mips/oprofile/common.c
+@@ -11,11 +11,15 @@
  #include <linux/init.h>
  #include <linux/oprofile.h>
  #include <linux/smp.h>
 +#include <asm/ptrace.h>
  #include <asm/cpu-info.h>
 +#include <asm/rb/boards.h>
+ #include <asm/cpu-type.h>
  
  #include "op_impl.h"
  
@@ -1317,9 +1356,10 @@ diff -puNrb linux-3.10.49/arch/mips/oprofile/common.c linux-3.10.49-minimal/arch
  	switch (current_cpu_type()) {
  	case CPU_5KC:
  	case CPU_M14KC:
-diff -puNrb linux-3.10.49/arch/mips/oprofile/Makefile linux-3.10.49-minimal/arch/mips/oprofile/Makefile
---- linux-3.10.49/arch/mips/oprofile/Makefile	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/oprofile/Makefile	2014-01-11 07:15:11.000000000 +0000
+Index: linux-3.18.43/arch/mips/oprofile/Makefile
+===================================================================
+--- linux-3.18.43.orig/arch/mips/oprofile/Makefile
++++ linux-3.18.43/arch/mips/oprofile/Makefile
 @@ -4,6 +4,7 @@ DRIVER_OBJS = $(addprefix ../../../drive
  		oprof.o cpu_buffer.o buffer_sync.o \
  		event_buffer.o oprofile_files.o \
@@ -1328,9 +1368,10 @@ diff -puNrb linux-3.10.49/arch/mips/oprofile/Makefile linux-3.10.49-minimal/arch
  		timer_int.o )
  
  oprofile-y				:= $(DRIVER_OBJS) common.o backtrace.o
-diff -puNrb linux-3.10.49/arch/mips/rb/irq.c linux-3.10.49-minimal/arch/mips/rb/irq.c
---- linux-3.10.49/arch/mips/rb/irq.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/rb/irq.c	2014-01-11 08:43:14.000000000 +0000
+Index: linux-3.18.43/arch/mips/rb/irq.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/rb/irq.c
 @@ -0,0 +1,108 @@
 +#include <linux/init.h>
 +#include <linux/linkage.h>
@@ -1440,14 +1481,16 @@ diff -puNrb linux-3.10.49/arch/mips/rb/irq.c linux-3.10.49-minimal/arch/mips/rb/
 +						 handle_edge_irq);
 +	}
 +}
-diff -puNrb linux-3.10.49/arch/mips/rb/Makefile linux-3.10.49-minimal/arch/mips/rb/Makefile
---- linux-3.10.49/arch/mips/rb/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/rb/Makefile	2014-01-11 08:15:03.000000000 +0000
+Index: linux-3.18.43/arch/mips/rb/Makefile
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/rb/Makefile
 @@ -0,0 +1 @@
 +obj-y += prom.o platform.o irq.o
-diff -puNrb linux-3.10.49/arch/mips/rb/Platform linux-3.10.49-minimal/arch/mips/rb/Platform
---- linux-3.10.49/arch/mips/rb/Platform	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/rb/Platform	2014-01-11 07:18:49.000000000 +0000
+Index: linux-3.18.43/arch/mips/rb/Platform
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/rb/Platform
 @@ -0,0 +1,13 @@
 +#
 +# Mikrotik RB100/RB500 boards
@@ -1462,9 +1505,10 @@ diff -puNrb linux-3.10.49/arch/mips/rb/Platform linux-3.10.49-minimal/arch/mips/
 +load-$(CONFIG_MIPS_MIKROTIK) += 0xffffffff80101000
 +endif
 +
-diff -puNrb linux-3.10.49/arch/mips/rb/platform.c linux-3.10.49-minimal/arch/mips/rb/platform.c
---- linux-3.10.49/arch/mips/rb/platform.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/rb/platform.c	2014-01-11 08:04:11.000000000 +0000
+Index: linux-3.18.43/arch/mips/rb/platform.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/rb/platform.c
 @@ -0,0 +1,18 @@
 +#include <linux/platform_device.h>
 +#include <linux/serial.h>
@@ -1484,9 +1528,10 @@ diff -puNrb linux-3.10.49/arch/mips/rb/platform.c linux-3.10.49-minimal/arch/mip
 +}
 +
 +arch_initcall(rb_platform_init);
-diff -puNrb linux-3.10.49/arch/mips/rb/prom.c linux-3.10.49-minimal/arch/mips/rb/prom.c
---- linux-3.10.49/arch/mips/rb/prom.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/rb/prom.c	2014-01-11 08:48:36.000000000 +0000
+Index: linux-3.18.43/arch/mips/rb/prom.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/rb/prom.c
 @@ -0,0 +1,152 @@
 +#include <linux/init.h>
 +#include <linux/mm.h>
@@ -1640,14 +1685,16 @@ diff -puNrb linux-3.10.49/arch/mips/rb/prom.c linux-3.10.49-minimal/arch/mips/rb
 +{
 +	return read_c0_count() * 1000000000 / mips_hpt_frequency;
 +}
-diff -puNrb linux-3.10.49/arch/mips/rb/vm/Makefile linux-3.10.49-minimal/arch/mips/rb/vm/Makefile
---- linux-3.10.49/arch/mips/rb/vm/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/rb/vm/Makefile	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/rb/vm/Makefile
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/rb/vm/Makefile
 @@ -0,0 +1 @@
 +obj-y	 := setup.o
-diff -puNrb linux-3.10.49/arch/mips/rb/vm/setup.c linux-3.10.49-minimal/arch/mips/rb/vm/setup.c
---- linux-3.10.49/arch/mips/rb/vm/setup.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/arch/mips/rb/vm/setup.c	2014-01-11 05:37:12.000000000 +0000
+Index: linux-3.18.43/arch/mips/rb/vm/setup.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/rb/vm/setup.c
 @@ -0,0 +1,142 @@
 +#include <linux/interrupt.h>
 +#include <linux/sched.h>
@@ -1791,10 +1838,11 @@ diff -puNrb linux-3.10.49/arch/mips/rb/vm/setup.c linux-3.10.49-minimal/arch/mip
 +
 +}
 +arch_initcall(init_ctrl_interrupt);
-diff -puNrb linux-3.10.49/drivers/block/loop.c linux-3.10.49-minimal/drivers/block/loop.c
---- linux-3.10.49/drivers/block/loop.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/drivers/block/loop.c	2014-01-11 07:26:26.000000000 +0000
-@@ -372,6 +372,9 @@ do_lo_receive(struct loop_device *lo,
+Index: linux-3.18.43/drivers/block/loop.c
+===================================================================
+--- linux-3.18.43.orig/drivers/block/loop.c
++++ linux-3.18.43/drivers/block/loop.c
+@@ -373,6 +373,9 @@ do_lo_receive(struct loop_device *lo,
  	struct file *file;
  	ssize_t retval;
  
@@ -1804,7 +1852,7 @@ diff -puNrb linux-3.10.49/drivers/block/loop.c linux-3.10.49-minimal/drivers/blo
  	cookie.lo = lo;
  	cookie.page = bvec->bv_page;
  	cookie.offset = bvec->bv_offset;
-@@ -386,6 +389,11 @@ do_lo_receive(struct loop_device *lo,
+@@ -387,6 +390,11 @@ do_lo_receive(struct loop_device *lo,
  	file = lo->lo_backing_file;
  	retval = splice_direct_to_actor(file, &sd, lo_direct_splice_actor);
  
@@ -1816,10 +1864,11 @@ diff -puNrb linux-3.10.49/drivers/block/loop.c linux-3.10.49-minimal/drivers/blo
  	return retval;
  }
  
-diff -puNrb linux-3.10.49/drivers/char/Kconfig linux-3.10.49-minimal/drivers/char/Kconfig
---- linux-3.10.49/drivers/char/Kconfig	2014-01-11 05:33:54.000000000 +0000
-+++ linux-3.10.49-minimal/drivers/char/Kconfig	2014-01-11 07:26:40.000000000 +0000
-@@ -156,6 +156,13 @@ config PPDEV
+Index: linux-3.18.43/drivers/char/Kconfig
+===================================================================
+--- linux-3.18.43.orig/drivers/char/Kconfig
++++ linux-3.18.43/drivers/char/Kconfig
+@@ -144,6 +144,13 @@ config PPDEV
  	  If unsure, say N.
  
  source "drivers/tty/hvc/Kconfig"
@@ -1833,15 +1882,16 @@ diff -puNrb linux-3.10.49/drivers/char/Kconfig linux-3.10.49-minimal/drivers/cha
  
  config VIRTIO_CONSOLE
  	tristate "Virtio console"
-@@ -606,4 +613,3 @@ config TILE_SROM
- 	  how to partition a single ROM for multiple purposes.
+@@ -603,4 +610,3 @@ config TILE_SROM
+ source "drivers/char/xillybus/Kconfig"
  
  endmenu
 -
-diff -puNrb linux-3.10.49/drivers/net/ethernet/Kconfig linux-3.10.49-minimal/drivers/net/ethernet/Kconfig
---- linux-3.10.49/drivers/net/ethernet/Kconfig	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/drivers/net/ethernet/Kconfig	2014-01-11 07:30:08.000000000 +0000
-@@ -85,6 +85,11 @@ config LANTIQ_ETOP
+Index: linux-3.18.43/drivers/net/ethernet/Kconfig
+===================================================================
+--- linux-3.18.43.orig/drivers/net/ethernet/Kconfig
++++ linux-3.18.43/drivers/net/ethernet/Kconfig
+@@ -103,6 +103,11 @@ config LANTIQ_ETOP
  	---help---
  	  Support for the MII0 inside the Lantiq SoC
  
@@ -1853,10 +1903,11 @@ diff -puNrb linux-3.10.49/drivers/net/ethernet/Kconfig linux-3.10.49-minimal/dri
  source "drivers/net/ethernet/marvell/Kconfig"
  source "drivers/net/ethernet/mellanox/Kconfig"
  source "drivers/net/ethernet/micrel/Kconfig"
-diff -puNrb linux-3.10.49/drivers/net/ethernet/Makefile linux-3.10.49-minimal/drivers/net/ethernet/Makefile
---- linux-3.10.49/drivers/net/ethernet/Makefile	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/drivers/net/ethernet/Makefile	2014-01-11 07:30:34.000000000 +0000
-@@ -35,6 +35,7 @@ obj-$(CONFIG_NET_VENDOR_XSCALE) += xscal
+Index: linux-3.18.43/drivers/net/ethernet/Makefile
+===================================================================
+--- linux-3.18.43.orig/drivers/net/ethernet/Makefile
++++ linux-3.18.43/drivers/net/ethernet/Makefile
+@@ -42,6 +42,7 @@ obj-$(CONFIG_NET_VENDOR_XSCALE) += xscal
  obj-$(CONFIG_IP1000) += icplus/
  obj-$(CONFIG_JME) += jme.o
  obj-$(CONFIG_KORINA) += korina.o
@@ -1864,9 +1915,10 @@ diff -puNrb linux-3.10.49/drivers/net/ethernet/Makefile linux-3.10.49-minimal/dr
  obj-$(CONFIG_LANTIQ_ETOP) += lantiq_etop.o
  obj-$(CONFIG_NET_VENDOR_MARVELL) += marvell/
  obj-$(CONFIG_NET_VENDOR_MELLANOX) += mellanox/
-diff -puNrb linux-3.10.49/drivers/net/ethernet/mtveth.c linux-3.10.49-minimal/drivers/net/ethernet/mtveth.c
---- linux-3.10.49/drivers/net/ethernet/mtveth.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/drivers/net/ethernet/mtveth.c	2014-01-11 07:30:48.000000000 +0000
+Index: linux-3.18.43/drivers/net/ethernet/mtveth.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/drivers/net/ethernet/mtveth.c
 @@ -0,0 +1,284 @@
 +#include <linux/skbuff.h>
 +#include <linux/netdevice.h>
@@ -2152,10 +2204,11 @@ diff -puNrb linux-3.10.49/drivers/net/ethernet/mtveth.c linux-3.10.49-minimal/dr
 +	return 0;
 +}
 +module_init(veth_init);
-diff -puNrb linux-3.10.49/drivers/tty/hvc/hvc_console.c linux-3.10.49-minimal/drivers/tty/hvc/hvc_console.c
---- linux-3.10.49/drivers/tty/hvc/hvc_console.c	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/drivers/tty/hvc/hvc_console.c	2014-01-11 07:33:14.000000000 +0000
-@@ -588,7 +588,7 @@ static int hvc_chars_in_buffer(struct tt
+Index: linux-3.18.43/drivers/tty/hvc/hvc_console.c
+===================================================================
+--- linux-3.18.43.orig/drivers/tty/hvc/hvc_console.c
++++ linux-3.18.43/drivers/tty/hvc/hvc_console.c
+@@ -597,7 +597,7 @@ static int hvc_chars_in_buffer(struct tt
   * there has been no input for some time.
   */
  #define MIN_TIMEOUT		(10)
@@ -2164,9 +2217,10 @@ diff -puNrb linux-3.10.49/drivers/tty/hvc/hvc_console.c linux-3.10.49-minimal/dr
  static u32 timeout = MIN_TIMEOUT;
  
  #define HVC_POLL_READ	0x00000001
-diff -puNrb linux-3.10.49/drivers/tty/hvc/hvc_meta.c linux-3.10.49-minimal/drivers/tty/hvc/hvc_meta.c
---- linux-3.10.49/drivers/tty/hvc/hvc_meta.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/drivers/tty/hvc/hvc_meta.c	2014-01-11 07:33:36.000000000 +0000
+Index: linux-3.18.43/drivers/tty/hvc/hvc_meta.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/drivers/tty/hvc/hvc_meta.c
 @@ -0,0 +1,135 @@
 +#include <linux/kernel.h>
 +#include <linux/init.h>
@@ -2303,9 +2357,10 @@ diff -puNrb linux-3.10.49/drivers/tty/hvc/hvc_meta.c linux-3.10.49-minimal/drive
 +	return 0;
 +}
 +module_init(vm_init);
-diff -puNrb linux-3.10.49/drivers/tty/hvc/Makefile linux-3.10.49-minimal/drivers/tty/hvc/Makefile
---- linux-3.10.49/drivers/tty/hvc/Makefile	2012-06-01 08:16:13.000000000 +0100
-+++ linux-3.10.49-minimal/drivers/tty/hvc/Makefile	2014-01-11 07:33:59.000000000 +0000
+Index: linux-3.18.43/drivers/tty/hvc/Makefile
+===================================================================
+--- linux-3.18.43.orig/drivers/tty/hvc/Makefile
++++ linux-3.18.43/drivers/tty/hvc/Makefile
 @@ -8,6 +8,7 @@ obj-$(CONFIG_HVC_BEAT)		+= hvc_beat.o
  obj-$(CONFIG_HVC_DRIVER)	+= hvc_console.o
  obj-$(CONFIG_HVC_IRQ)		+= hvc_irq.o
@@ -2314,10 +2369,11 @@ diff -puNrb linux-3.10.49/drivers/tty/hvc/Makefile linux-3.10.49-minimal/drivers
  obj-$(CONFIG_HVC_IUCV)		+= hvc_iucv.o
  obj-$(CONFIG_HVC_UDBG)		+= hvc_udbg.o
  obj-$(CONFIG_HVC_BFIN_JTAG)	+= hvc_bfin_jtag.o
-diff -puNrb linux-3.10.49/fs/Kconfig linux-3.10.49-minimal/fs/Kconfig
---- linux-3.10.49/fs/Kconfig	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/fs/Kconfig	2014-01-11 07:36:36.000000000 +0000
-@@ -217,6 +217,7 @@ source "fs/pstore/Kconfig"
+Index: linux-3.18.43/fs/Kconfig
+===================================================================
+--- linux-3.18.43.orig/fs/Kconfig
++++ linux-3.18.43/fs/Kconfig
+@@ -216,6 +216,7 @@ source "fs/ufs/Kconfig"
  source "fs/exofs/Kconfig"
  source "fs/f2fs/Kconfig"
  source "fs/efivarfs/Kconfig"
@@ -2325,10 +2381,11 @@ diff -puNrb linux-3.10.49/fs/Kconfig linux-3.10.49-minimal/fs/Kconfig
  
  endif # MISC_FILESYSTEMS
  
-diff -puNrb linux-3.10.49/fs/Makefile linux-3.10.49-minimal/fs/Makefile
---- linux-3.10.49/fs/Makefile	2014-01-11 05:33:53.000000000 +0000
-+++ linux-3.10.49-minimal/fs/Makefile	2014-01-11 07:37:06.000000000 +0000
-@@ -62,6 +62,7 @@ obj-$(CONFIG_PROFILING)		+= dcookies.o
+Index: linux-3.18.43/fs/Makefile
+===================================================================
+--- linux-3.18.43.orig/fs/Makefile
++++ linux-3.18.43/fs/Makefile
+@@ -61,6 +61,7 @@ obj-$(CONFIG_PROFILING)		+= dcookies.o
  obj-$(CONFIG_DLM)		+= dlm/
   
  # Do not add any filesystems before this line
@@ -2336,9 +2393,10 @@ diff -puNrb linux-3.10.49/fs/Makefile linux-3.10.49-minimal/fs/Makefile
  obj-$(CONFIG_FSCACHE)		+= fscache/
  obj-$(CONFIG_REISERFS_FS)	+= reiserfs/
  obj-$(CONFIG_EXT3_FS)		+= ext3/ # Before ext2 so root fs can be ext3
-diff -puNrb linux-3.10.49/fs/metafs/inode.c linux-3.10.49-minimal/fs/metafs/inode.c
---- linux-3.10.49/fs/metafs/inode.c	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/fs/metafs/inode.c	2014-01-11 05:37:13.000000000 +0000
+Index: linux-3.18.43/fs/metafs/inode.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/fs/metafs/inode.c
 @@ -0,0 +1,909 @@
 +#include <linux/module.h>
 +#include <linux/fs.h>
@@ -2770,7 +2828,7 @@ diff -puNrb linux-3.10.49/fs/metafs/inode.c linux-3.10.49-minimal/fs/metafs/inod
 +	return err;
 +}
 +
-+static int mfs_readdir(struct file *file, void *dirent, filldir_t filldir)
++static int mfs_readdir(struct file *file, struct dir_context *ctx)
 +{
 +	struct readdir_req req;
 +	struct readdir_rep *rep;
@@ -2785,7 +2843,7 @@ diff -puNrb linux-3.10.49/fs/metafs/inode.c linux-3.10.49-minimal/fs/metafs/inod
 +	req.id = MFS_ID(file->f_dentry->d_inode->i_sb);
 +	req.cmd = CMD_READDIR;
 +	req.ino = file->f_dentry->d_inode->i_ino;
-+	req.offset = file->f_pos;
++	req.offset = ctx->pos;
 +	req.size = PAGE_SIZE;
 +
 +	len = send_request(&req, sizeof(req), rep, PAGE_SIZE);
@@ -2800,13 +2858,13 @@ diff -puNrb linux-3.10.49/fs/metafs/inode.c linux-3.10.49-minimal/fs/metafs/inod
 +	while ((char *) dn + sizeof(struct dirnode) < (char *) rep + len) {
 +		if ((char *) dn + dn->len > (char *) rep + len)
 +			break;
-+		if (filldir(dirent, dn->name, dn->len - sizeof(struct dirnode),
-+			    dn->offset, dn->ino, dn->type) < 0)
++		if (!dir_emit(ctx, dn->name, dn->len - sizeof(struct dirnode),
++				dn->ino, dn->type))
 +			break;
 +		++res;
 +		dn = (struct dirnode *) ((unsigned char *) dn + dn->len);
 +	}
-+	file->f_pos = rep->offset;
++	ctx->pos = rep->offset;
 +
 +  eod:
 +	kfree(rep);
@@ -3005,7 +3063,7 @@ diff -puNrb linux-3.10.49/fs/metafs/inode.c linux-3.10.49-minimal/fs/metafs/inod
 +
 +static const struct file_operations mfs_dir_fops = {
 +	.read		= generic_read_dir,
-+	.readdir	= mfs_readdir,
++	.iterate	= mfs_readdir,
 +};
 +
 +static const struct inode_operations mfs_dir_ops = {
@@ -3027,10 +3085,10 @@ diff -puNrb linux-3.10.49/fs/metafs/inode.c linux-3.10.49-minimal/fs/metafs/inod
 +
 +static const struct file_operations mfs_fops = {
 +	.llseek		= generic_file_llseek,
-+	.read		= do_sync_read,
-+	.write		= do_sync_write,
-+	.aio_read	= generic_file_aio_read,
-+	.aio_write	= generic_file_aio_write,
++	.read		= new_sync_read,
++	.write		= new_sync_write,
++	.read_iter	= generic_file_read_iter,
++	.write_iter	= generic_file_write_iter,
 +	.mmap		= generic_file_readonly_mmap,
 +	.splice_read	= generic_file_splice_read,
 +	.fsync		= mfs_fsync,
@@ -3249,16 +3307,18 @@ diff -puNrb linux-3.10.49/fs/metafs/inode.c linux-3.10.49-minimal/fs/metafs/inod
 +
 +module_init(init_mfs_fs);
 +module_exit(exit_mfs_fs);
-diff -puNrb linux-3.10.49/fs/metafs/Kconfig linux-3.10.49-minimal/fs/metafs/Kconfig
---- linux-3.10.49/fs/metafs/Kconfig	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/fs/metafs/Kconfig	2014-01-11 05:37:13.000000000 +0000
+Index: linux-3.18.43/fs/metafs/Kconfig
+===================================================================
+--- /dev/null
++++ linux-3.18.43/fs/metafs/Kconfig
 @@ -0,0 +1,3 @@
 +config META_FS
 +	depends on METAROUTER || MIPS_MIKROTIK
 +	tristate "MetaFS on Mikrotik MetaRouters"
-diff -puNrb linux-3.10.49/fs/metafs/Makefile linux-3.10.49-minimal/fs/metafs/Makefile
---- linux-3.10.49/fs/metafs/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ linux-3.10.49-minimal/fs/metafs/Makefile	2014-01-11 05:37:13.000000000 +0000
+Index: linux-3.18.43/fs/metafs/Makefile
+===================================================================
+--- /dev/null
++++ linux-3.18.43/fs/metafs/Makefile
 @@ -0,0 +1,3 @@
 +obj-y += metafs.o
 +

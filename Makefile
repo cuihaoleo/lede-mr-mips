@@ -11,7 +11,7 @@ BOARD:=mr-mips
 BOARDNAME:=Mikrotik MetaROUTER MIPS
 FEATURES:=targz
 
-LINUX_VERSION:=3.10.49
+KERNEL_PATCHVER:=3.18
 
 include $(INCLUDE_DIR)/target.mk
 $(eval $(call BuildTarget))
