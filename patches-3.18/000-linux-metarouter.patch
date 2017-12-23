@@ -1931,7 +1931,7 @@ Index: linux-3.18.43/drivers/net/ethernet/mtveth.c
 +#define TXBUF_COUNT	1024
 +#define RXBUF_COUNT	128
 +
-+#define RXBUF_SIZE	1600
++#define RXBUF_SIZE	10300
 +
 +extern int vm_create_queue(unsigned id, unsigned irq,
 +			   unsigned tx, unsigned rx);
