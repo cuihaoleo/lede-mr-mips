@@ -1,0 +1,328 @@
+Index: linux-3.18.43/arch/mips/kernel/backtrace.c
+===================================================================
+--- /dev/null
++++ linux-3.18.43/arch/mips/kernel/backtrace.c
+@@ -0,0 +1,156 @@
++#include <linux/module.h>
++#include <linux/oprofile.h>
++#include <linux/mm.h>
++#include <asm/page.h>
++#include <asm/processor.h>
++#include <asm/uaccess.h>
++
++#define INSTR_JR_RA	0x03e00008
++#define INSTR_JRHB_RA	0x03e00408
++#define INSTR_ADDIU_SP	0x241d0000
++#define INSTR_SW_RA_SP	0xafbf0000
++#define INSTR_MOVE_RA_ZERO	0x0000f821
++#define REGS_MASK	0x03e00000
++#define IMM16_MASK	0x0000ffff
++
++#define REG_SP		29
++#define TO_REGS(x)	((x) << 21)
++
++static inline int fetch_u32(void *val, void *ptr, int usermode)
++{
++	if (((unsigned) ptr & 3) != 0)
++		return -EFAULT;
++
++	if (usermode)
++		return get_user(*(unsigned *) val, (unsigned *) ptr);
++
++	if (KSEGX(ptr) == KSEG3)
++		return __get_user(*(unsigned *) val, (unsigned *) ptr);
++
++	if (KSEGX(ptr) != KSEG0 && KSEGX(ptr) != KSEG2)
++		return -EFAULT;
++
++	if ((unsigned long) ptr < PAGE_OFFSET)
++		return -EFAULT;
++	if ((unsigned long) ptr  > (unsigned long) high_memory)
++		return -EFAULT;
++
++	return __get_user(*(unsigned *) val, (unsigned *) ptr);
++}
++
++static inline int is_bcond(unsigned i)
++{
++    unsigned c = (i >> 26) & 7;
++    switch (i >> 29) {
++    case 0:
++	if (c == 1)
++	    return (i & (1 << 19)) == 0;
++	/* fall trough */
++    case 2:
++	return c >= 4;
++    }
++    return 0;
++}
++
++static inline unsigned *find_prev_branch(unsigned *instr, unsigned *limit,
++					 int usermode)
++{
++    unsigned i = 0;
++    unsigned *target = instr;
++
++    for (--instr; instr > limit; --instr) {
++	if (fetch_u32(&i, instr, usermode))
++	    return 0;
++
++	if (is_bcond(i)) {
++	    if (instr + 1 + (short) i == target) {
++		return instr;
++	    }
++	} else if ((i & ~(IMM16_MASK | REGS_MASK)) == INSTR_ADDIU_SP) {
++	    if ((i & REGS_MASK) != TO_REGS(REG_SP)) {
++		/* not simple sp adjustment, probably switching stack here */
++		return 0;
++	    }
++	    /* check if frame start has been hit */
++	    if ((short) (i & IMM16_MASK) < 0) {
++		return 0;
++	    }
++	}
++    }
++    return 0;
++}
++
++unsigned long find_prev_frame(unsigned long pc, unsigned long ra,
++			      unsigned long *sp, int usermode)
++{
++    int storedRA = -1;
++    int frameSize = 0;
++    unsigned *instr;
++    unsigned *limit = (unsigned *) (pc - 4096);
++    unsigned i = 0;
++    int imm;
++
++    if (!fetch_u32(&i, (unsigned *) pc, usermode)) {
++	if ((i & ~(IMM16_MASK | REGS_MASK)) == INSTR_ADDIU_SP
++	    && (short) (i & IMM16_MASK) < 0) {
++	    /* we are at the beging of function, reserving stack */
++	    return ra;
++	}
++    }
++
++    for (instr = (unsigned *) pc - 1; instr > limit; --instr) {
++	if (fetch_u32(&i, instr, usermode))
++	    break;
++
++	if (i == INSTR_JR_RA || i == INSTR_JRHB_RA) {
++	    /* found prev func end */
++	    break;
++	} else if ((i & ~IMM16_MASK) == INSTR_SW_RA_SP) {
++	    /* remember where previous RA was stored */
++	    storedRA = (short) (i & IMM16_MASK);
++	} else if ((i & ~(IMM16_MASK | REGS_MASK)) == INSTR_ADDIU_SP) {
++	    if ((i & REGS_MASK) != TO_REGS(REG_SP)) {
++		/* not simple sp adjustment, probably switching stack here */
++		return 0;
++	    }
++
++	    imm = (short) (i & IMM16_MASK);
++	    if (imm >= 0) {
++		/* found prev func end (poping back stack frame),
++		   or end of our own func in other of it's threads (chunks) */
++		if (storedRA != -1)
++		    break;
++
++		instr = find_prev_branch(instr + 1, limit, usermode);
++		if (instr == 0) {
++		    /* no branch to us was found,
++		       it means we are at the begining of the frame */
++		    break;
++		}
++	    } else {
++		frameSize = -imm;
++		break;
++	    }
++	} else if (i == INSTR_MOVE_RA_ZERO) {
++	    /* we have come to the end of the world,
++	       __start() func sets up RA wrongly */
++	    return 0;
++	}
++    }
++
++    if (frameSize > 0) {
++	/* if we hit addiu sp,-X first, we have stack frame */
++
++	if (storedRA != -1) {
++	    if (fetch_u32(&ra, (char *) *sp + storedRA, usermode))
++		return 0;
++	    if (ra == 0)
++		return 0;
++	}
++	*sp += frameSize;
++	return ra;
++    }
++    return ra;
++}
++
++EXPORT_SYMBOL(find_prev_frame);
+Index: linux-3.18.43/arch/mips/kernel/Makefile
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/Makefile
++++ linux-3.18.43/arch/mips/kernel/Makefile
+@@ -5,7 +5,7 @@
+ extra-y		:= head.o vmlinux.lds
+ 
+ obj-y		+= cpu-probe.o branch.o entry.o genex.o idle.o irq.o process.o \
+-		   prom.o ptrace.o reset.o setup.o signal.o syscall.o \
++		   prom.o ptrace.o reset.o setup.o signal.o syscall.o backtrace.o \
+ 		   time.o topology.o traps.o unaligned.o watch.o vdso.o
+ 
+ ifdef CONFIG_FUNCTION_TRACER
+Index: linux-3.18.43/arch/mips/kernel/traps.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/kernel/traps.c
++++ linux-3.18.43/arch/mips/kernel/traps.c
+@@ -100,6 +100,8 @@ void (*board_bind_eic_interrupt)(int irq
+ void (*board_ebase_setup)(void);
+ void(*board_cache_error_setup)(void);
+ 
++#define CONFIG_RAWBACKTRACE
++#ifdef CONFIG_RAWBACKTRACE
+ static void show_raw_backtrace(unsigned long reg29)
+ {
+ 	unsigned long *sp = (unsigned long *)(reg29 & ~3);
+@@ -153,6 +155,25 @@ static void show_backtrace(struct task_s
+ 	printk("\n");
+ }
+ 
++#else
++
++static void show_backtrace(struct task_struct *task, const struct pt_regs *regs)
++{
++	unsigned long sp = regs->regs[29];
++	unsigned long ra = regs->regs[31];
++	unsigned long pc = regs->cp0_epc;
++	int depth = 16;
++
++	printk("Call Trace:\n");
++	while (depth-- && pc) {
++	    print_ip_sym(pc);
++	    pc = find_prev_frame(pc, ra, &sp, 0);
++	    ra = 0;
++	}
++	printk("\n");
++}
++#endif
++
+ /*
+  * This routine abuses get_user()/put_user() to reference pointers
+  * with at least a bit of error checking ...
+@@ -386,6 +407,7 @@ void __noreturn die(const char *str, str
+ 		       SIGSEGV) == NOTIFY_STOP)
+ 		sig = 0;
+ 
++	oops_enter();
+ 	console_verbose();
+ 	raw_spin_lock_irq(&die_lock);
+ 	bust_spinlocks(1);
+@@ -1743,7 +1765,7 @@ void __init *set_except_vector(int n, vo
+ #endif
+ 		u32 *buf = (u32 *)(ebase + 0x200);
+ 		unsigned int k0 = 26;
+-		if ((handler & jump_mask) == ((ebase + 0x200) & jump_mask)) {
++		if ((handler & jump_mask) == ((KSEG0ADDR(ebase) + 0x200) & jump_mask)) {
+ 			uasm_i_j(&buf, handler & ~jump_mask);
+ 			uasm_i_nop(&buf);
+ 		} else {
+@@ -1961,6 +1983,7 @@ void per_cpu_trap_init(bool is_boot_cpu)
+ 	 *  o read IntCtl.IPTI to determine the timer interrupt
+ 	 *  o read IntCtl.IPPCI to determine the performance counter interrupt
+ 	 */
++#ifdef CONFIG_CPU_MIPSR2
+ 	if (cpu_has_mips_r2) {
+ 		cp0_compare_irq_shift = CAUSEB_TI - CAUSEB_IP;
+ 		cp0_compare_irq = (read_c0_intctl() >> INTCTLB_IPTI) & 7;
+@@ -1968,11 +1991,17 @@ void per_cpu_trap_init(bool is_boot_cpu)
+ 		if (cp0_perfcount_irq == cp0_compare_irq)
+ 			cp0_perfcount_irq = -1;
+ 	} else {
++#endif
+ 		cp0_compare_irq = CP0_LEGACY_COMPARE_IRQ;
+ 		cp0_compare_irq_shift = CP0_LEGACY_PERFCNT_IRQ;
+ 		cp0_perfcount_irq = -1;
++#ifdef CONFIG_CPU_MIPSR2
+ 	}
++#endif
+ 
++#ifdef CONFIG_MIPS_MIKROTIK
++	cp0_compare_irq = CP0_LEGACY_COMPARE_IRQ;
++#endif
+ 	if (!cpu_data[cpu].asid_cache)
+ 		cpu_data[cpu].asid_cache = ASID_FIRST_VERSION;
+ 
+@@ -2050,7 +2079,7 @@ void __init trap_init(void)
+ #define KVM_GUEST_KSEG0     0x40000000
+         ebase = KVM_GUEST_KSEG0;
+ #else
+-        ebase = CKSEG0;
++        ebase = CAC_BASE;
+ #endif
+ 		if (cpu_has_mips_r2)
+ 			ebase += (read_c0_ebase() & 0x3ffff000);
+Index: linux-3.18.43/arch/mips/oprofile/common.c
+===================================================================
+--- linux-3.18.43.orig/arch/mips/oprofile/common.c
++++ linux-3.18.43/arch/mips/oprofile/common.c
+@@ -11,11 +11,15 @@
+ #include <linux/init.h>
+ #include <linux/oprofile.h>
+ #include <linux/smp.h>
++#include <asm/ptrace.h>
+ #include <asm/cpu-info.h>
++#include <asm/rb/boards.h>
+ #include <asm/cpu-type.h>
+ 
+ #include "op_impl.h"
+ 
++extern int __init hrtimer_oprofile_init(struct oprofile_operations *);
++
+ extern struct op_mips_model op_model_mipsxx_ops __weak;
+ extern struct op_mips_model op_model_loongson2_ops __weak;
+
+@@ -70,11 +74,30 @@ static void op_mips_stop(void)
+ 	on_each_cpu(model->cpu_stop, NULL, 1);
+ }
+ 
++void mt_op_mips_backtrace(struct pt_regs * const regs, unsigned int depth)
++{
++	unsigned long ra = regs->regs[31];
++	unsigned long pc = regs->cp0_epc;
++	unsigned long sp = regs->regs[29];
++	int usermode = user_mode(regs);
++
++	while (depth-- && pc) {
++	    pc = find_prev_frame(pc, ra, &sp, usermode);
++	    if (pc) oprofile_add_trace((unsigned long) pc);
++	    ra = 0;
++	}
++}
++
+ int __init oprofile_arch_init(struct oprofile_operations *ops)
+ {
+ 	struct op_mips_model *lmodel = NULL;
+ 	int res;
+ 
++	ops->backtrace = mt_op_mips_backtrace;
++
++	if (hrtimer_oprofile_init(ops) == 0)
++		return 0;
++
+ 	switch (current_cpu_type()) {
+ 	case CPU_5KC:
+ 	case CPU_M14KC:
+Index: linux-3.18.43/arch/mips/oprofile/Makefile
+===================================================================
+--- linux-3.18.43.orig/arch/mips/oprofile/Makefile
++++ linux-3.18.43/arch/mips/oprofile/Makefile
+@@ -4,6 +4,7 @@ DRIVER_OBJS = $(addprefix ../../../drive
+ 		oprof.o cpu_buffer.o buffer_sync.o \
+ 		event_buffer.o oprofile_files.o \
+ 		oprofilefs.o oprofile_stats.o \
++		hrtimer.o \
+ 		timer_int.o )
+ 
+ oprofile-y				:= $(DRIVER_OBJS) common.o backtrace.o
