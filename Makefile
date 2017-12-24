@@ -14,5 +14,8 @@ FEATURES:=targz
 KERNEL_PATCHVER:=3.18
 
 include $(INCLUDE_DIR)/target.mk
+
+DEFAULT_PACKAGES+=-mtd -ppp
+
 $(eval $(call BuildTarget))
 
