@@ -18,48 +18,6 @@ Index: linux-3.18.43/arch/mips/include/asm/io.h
  	}
  
  	return __ioremap(offset, size, flags);
-@@ -630,4 +632,41 @@ extern void (*_dma_cache_inv)(unsigned l
-  */
- #define xlate_dev_kmem_ptr(p)	p
- 
-+#ifdef CONFIG_SOFT_PCI_IO
-+
-+unsigned _pci_inb(unsigned long port);
-+unsigned _pci_inw(unsigned long port);
-+unsigned _pci_inl(unsigned long port);
-+void _pci_outb(unsigned char value, unsigned long port);
-+void _pci_outw(unsigned short value, unsigned long port);
-+void _pci_outl(unsigned value, unsigned long port);
-+
-+#define inb	_pci_inb
-+#define inb_p	_pci_inb
-+#define __mem_inb	_pci_inb
-+#define __mem_inb_p	_pci_inb
-+#define inw	_pci_inw
-+#define inw_p	_pci_inw
-+#define __mem_inw	_pci_inw
-+#define __mem_inw_p	_pci_inw
-+#define inl	_pci_inl
-+#define inl_p	_pci_inl
-+#define __mem_inl	_pci_inl
-+#define __mem_inl_p	_pci_inl
-+
-+#define outb	_pci_outb
-+#define outb_p	_pci_outb
-+#define __mem_outb	_pci_outb
-+#define __mem_outb_p	_pci_outb
-+#define outw	_pci_outw
-+#define outw_p	_pci_outw
-+#define __mem_outw	_pci_outw
-+#define __mem_outw_p	_pci_outw
-+#define outl	_pci_outl
-+#define outl_p	_pci_outl
-+#define __mem_outl	_pci_outl
-+#define __mem_outl_p	_pci_outl
-+
-+#endif
-+
- #endif /* _ASM_IO_H */
 Index: linux-3.18.43/arch/mips/include/asm/mach-rb/cpu-feature-overrides.h
 ===================================================================
 --- /dev/null
@@ -424,7 +382,7 @@ Index: linux-3.18.43/arch/mips/Kconfig
 ===================================================================
 --- linux-3.18.43.orig/arch/mips/Kconfig
 +++ linux-3.18.43/arch/mips/Kconfig
-@@ -723,6 +723,23 @@ config MIKROTIK_RB532
+@@ -723,6 +723,22 @@ config MIKROTIK_RB532
  	  Support the Mikrotik(tm) RouterBoard 532 series,
  	  based on the IDT RC32434 SoC.
  
@@ -433,7 +391,6 @@ Index: linux-3.18.43/arch/mips/Kconfig
 +	select CEVT_R4K
 +	select CSRC_R4K
 +	select DMA_NONCOHERENT
-+	select HW_HAS_PCI
 +	select IRQ_CPU
 +	select SYS_HAS_CPU_MIPS32_R1
 +	select SYS_HAS_CPU_MIPS32_R2
@@ -448,14 +405,10 @@ Index: linux-3.18.43/arch/mips/Kconfig
  config CAVIUM_OCTEON_SOC
  	bool "Cavium Networks Octeon SoC based boards"
  	select CEVT_R4K
-@@ -834,6 +851,14 @@ config MIPS_PARAVIRT
+@@ -834,6 +851,10 @@ config MIPS_PARAVIRT
  
  endchoice
  
-+config SOFT_PCI_IO
-+	bool "PCI IO software emulation on RB4xx"
-+	depends on MIPS_MIKROTIK
-+
 +config MAPPED_KERNEL
 +	bool "Mapped kernel support"
 +	depends on MIPS_MIKROTIK
