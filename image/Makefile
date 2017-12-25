@@ -9,6 +9,7 @@ include $(INCLUDE_DIR)/image.mk
 
 define Image/BuildKernel
 	cp $(KDIR)/vmlinux.elf $(TARGET_DIR)/kernel
+	$(call Image/Build/targz)
 endef
 
 $(eval $(call BuildImage))
