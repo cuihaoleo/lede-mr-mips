@@ -382,7 +382,7 @@ Index: linux-3.18.43/arch/mips/Kconfig
 ===================================================================
 --- linux-3.18.43.orig/arch/mips/Kconfig
 +++ linux-3.18.43/arch/mips/Kconfig
-@@ -723,6 +723,22 @@ config MIKROTIK_RB532
+@@ -723,6 +723,21 @@ config MIKROTIK_RB532
  	  Support the Mikrotik(tm) RouterBoard 532 series,
  	  based on the IDT RC32434 SoC.
  
@@ -398,7 +398,6 @@ Index: linux-3.18.43/arch/mips/Kconfig
 +	select SYS_SUPPORTS_BIG_ENDIAN
 +	select SYS_SUPPORTS_32BIT_KERNEL
 +	select ZONE_DMA
-+	select ARCH_REQUIRE_GPIOLIB
 +	help
 +	  Say Y here to support all Mikrotik mips based routerboards
 +
